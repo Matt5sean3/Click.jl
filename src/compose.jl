@@ -1,6 +1,7 @@
 # Provides advanced support for working with Compose
 using Compose
-import Compose: Form, FormPrimitive
+import Compose: Form, FormPrimitive, PolygonPrimitive, RectanglePrimitive, 
+                CirclePrimitive, EllipsePrimitive, TextPrimitive
 import Measures: Vec2
 """
 ```julia
@@ -18,7 +19,7 @@ create_bounds(base::Context, primitive::FormPrimitive) =
 # polygon
 type PolygonBounds{P <: Vec2} <: Bounds
   origin::Context
-  poly::SimplePolygonPrimitive{P}
+  poly::PolygonPrimitive{P}
   units::Measure
 end
 
@@ -33,8 +34,6 @@ function create_bounds(base::Context, poly::PolygonPrimitive{Vec2})
   return PolygonBounds(base, poly)
 
 end
-
-function check_bounds()
 
 # rectangle
 type RectangleBounds{P <: Vec2, M1 <: Measure, M2 <: Measure} <: Bounds

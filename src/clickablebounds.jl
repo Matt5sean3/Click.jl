@@ -1,5 +1,3 @@
-using Compose
-
 type Listener
   callback::Function
   active::Bool
@@ -11,45 +9,48 @@ end
 
 """
 ```julia
-ClickableForm(base::Compose.Context, form::Compose.Form)
-(base::Compose.Context, form::Compose.Form)
+ClickableBounds(bounds::Bounds)
 ```
 
 * `base` - context containing the clickable form
 * `form` - clickable form in compose
 """
-type ClickableBounds <: Clickable
-  bounds::Bounds
+type ClickableBounds{B <: Bounds} <: Clickable
+  bounds::B
   hover::Bool
   mouseButtons::NTuple{3, Bool}
   listeners::Dict{Symbol, Array{Listener}}
-end
 
-function ClickableBounds(bounds::Bounds)
-  triggers = [:move, :down, :up, :rightdown, :rightup, :centerdown, :centerup, 
-    :out, :in, :click, :rightclick, :centerclick]
-  callbacks = Dict{Symbol, Array{Listener}}()
-  for trigger in triggers
-    callbacks[trigger] = Array{Listener}()
+  function ClickableBounds(bounds::Bounds)
+    triggers = [:move, :down, :up, :rightdown, :rightup, :centerdown, :centerup, 
+      :out, :in, :click, :rightclick, :centerclick]
+    callbacks = Dict{Symbol, Array{Listener}}()
+    for trigger in triggers
+      callbacks[trigger] = Array{Listener}()
+    end
+    return new(bounds, false, (false, false, false), callbacks)
   end
-  return Clickable(bounds, false, (false, false, false), callbacks)
+
 end
 
-function listen(f::Function, frm::ClickableBounds, trigger::Symbol)
+function listen(f::Function, frm::ClickableBounds{Bounds}, trigger::Symbol)
   list = frm.listeners[trigger]
   push!(list, (f, true))
   return length(list)
 end
 
-function deactivate(frm::ClickableBounds, trigger::Symbol, id)
+function deactivate(frm::ClickableBounds{Bounds}, trigger::Symbol, id)
   frm.listeners[trigger][id][2] = false
 end
 
-function reactivate(frm::ClickableBounds, trigger::Symbol, id)
+function reactivate(frm::ClickableBounds{Bounds}, trigger::Symbol, id)
   frm.listeners[trigger][id][2] = true
 end
 
-function update(frm::ClickableBounds, x::Number, y::Number, trigger::Symbol)
+function update(frm::ClickableBounds{Bounds}, 
+                x::Number, 
+                y::Number, 
+                trigger::Symbol)
   triggered = Array{Listener, 1}()
   isin = check_bounds(frm.bounds, x, y)
   if isin
