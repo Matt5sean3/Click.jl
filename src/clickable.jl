@@ -6,7 +6,7 @@ abstract Clickable
 An object implementing the `Clickable` interface.
 
 required
-* `listen`
+* `attend`
 * `update`
 
 optional
@@ -14,13 +14,13 @@ optional
 * `reactivate`
 * `bounding_box`
 
-see also: `listen`, `update`, `deactivate`, `reactivate`, `bounding_box`
+see also: `attend`, `update`, `deactivate`, `reactivate`, `bounding_box`
 """
 abstract Clickable
 
 """
 ```julia
-listen(f::Function, frm::Clickable, trigger::Symbol)
+attend(f::Function, frm::Clickable, trigger::Symbol)
 ```
 
 * `f` - callback function of the form `f(frm)`
@@ -33,7 +33,7 @@ Returns the identifier of the added listener which can be used in the
 This is compatible with the do-end syntax
 
 ```julia
-listen(frm, :click) do frm
+attend(frm, :click) do frm
   # ... CODE TO EXECUTE UPON CLICK ...
 end
 ```
@@ -55,8 +55,9 @@ The `trigger` symbols:
 ```
 
 """
-listen(f::Function, frm::Clickable, trigger::Symbol) = 
-  error("`listen` not implemented for the given Clickable")
+attend(f::Function, frm::Clickable, trigger::Symbol) = 
+  error(string("`attend` not implemented for the given Clickable(", 
+               typeof(frm), ")"))
 
 """
 ```julia
@@ -69,7 +70,7 @@ deactivate(frm::Clickable, trigger::Symbol, idx::Integer)
 
 Deactivates the listener on that trigger with the given index
 
-see also: `listen`
+see also: `attend`
 """
 deactivate(frm::Clickable, trigger::Symbol, id) =
   warn("`deactivate` not implemented for the given clickable")
@@ -85,7 +86,7 @@ reactivate(frm::Clickable, trigger::Symbol, idx::Integer)
 
 Reactivates the listener on that trigger with the given index
 
-see also: `deactivate`, `listen`
+see also: `deactivate`, `attend`
 """
 reactivate(frm::Clickable, trigger::Symbol, id) = 
   warn("`reactivate` not implemented for the given Clickable")
@@ -113,7 +114,7 @@ mouse is inbounds or out of bounds of the clickable is done internally.
 * `:centerup` - Middle mouse up
 """
 update(frm::Clickable, x::Number, y::Number, trigger::Symbol) = 
-  error("`trigger` not implemented for the given Clickable")
+  error("`update` not implemented for the given Clickable")
 
 """
 ```julia

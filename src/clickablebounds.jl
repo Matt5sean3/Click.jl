@@ -18,24 +18,24 @@ ClickableBounds(bounds::Bounds)
 type ClickableBounds{B <: Bounds} <: Clickable
   bounds::B
   hover::Bool
-  mouseButtons::NTuple{3, Bool}
-  listeners::Dict{Symbol, Array{Listener}}
+  mouseButtons::Array{Bool, 1}
+  listeners::Dict{Symbol, Array{Listener, 1}}
 
-  function ClickableBounds(bounds::Bounds)
+  function ClickableBounds(bounds::B)
     triggers = [:move, :down, :up, :rightdown, :rightup, :centerdown, :centerup, 
       :out, :in, :click, :rightclick, :centerclick]
-    callbacks = Dict{Symbol, Array{Listener}}()
+    callbacks = Dict{Symbol, Array{Listener, 1}}()
     for trigger in triggers
-      callbacks[trigger] = Array{Listener}()
+      callbacks[trigger] = Array{Listener, 1}()
     end
-    return new(bounds, false, (false, false, false), callbacks)
+    new(bounds, false, [false, false, false], callbacks)
   end
 
 end
 
-function listen(f::Function, frm::ClickableBounds{Bounds}, trigger::Symbol)
+function attend{C <: ClickableBounds}(f::Function, frm::C, trigger::Symbol)
   list = frm.listeners[trigger]
-  push!(list, (f, true))
+  push!(list, Listener(f, true))
   return length(list)
 end
 
@@ -47,7 +47,10 @@ function reactivate(frm::ClickableBounds{Bounds}, trigger::Symbol, id)
   frm.listeners[trigger][id][2] = true
 end
 
-function update(frm::ClickableBounds{Bounds}, 
+# nop, used internally to simplify code
+Base.push!(arr::Array{Listener, 1}) = arr
+
+function update{C <: ClickableBounds}(frm::C,
                 x::Number, 
                 y::Number, 
                 trigger::Symbol)
@@ -57,26 +60,28 @@ function update(frm::ClickableBounds{Bounds},
     # Always pass through when in bounds
     push!(triggered, frm.listeners[trigger]...)
     # Uses a sort of if-statement short-hand
-    trigger == :down && (mouseButtons[1] = true)
+    trigger == :down && (frm.mouseButtons[1] = true)
 
-    trigger == :up && mouseButtons[1] && 
+    trigger == :up && frm.mouseButtons[1] && 
       push!(triggered, frm.listeners[:click]...)
 
-    trigger == :rightdown && (mouseButtons[3] = true)
+    trigger == :rightdown && (frm.mouseButtons[3] = true)
 
-    trigger == :rightup && mouseButtons[3] && 
+    trigger == :rightup && frm.mouseButtons[3] && 
       push!(triggered, frm.listeners[:rightclick]...)
 
-    trigger == :centerdown && (mouseButtons[2] = true)
+    trigger == :centerdown && (frm.mouseButtons[2] = true)
 
-    trigger == :centerup && mouseButtons[2] &&
+    trigger == :centerup && frm.mouseButtons[2] &&
       push!(triggered, frm.listeners[:centerclick]...)
   end
   if frm.hover
     # Previously in bounds
     if !isin
       # Reset mouse clicking
-      mouseButtons = (false, false, false)
+      frm.mouseButtons[1] = false
+      frm.mouseButtons[2] = false
+      frm.mouseButtons[3] = false
       # left the bounds
       push!(triggered, frm.listeners[:out]...)
     end
