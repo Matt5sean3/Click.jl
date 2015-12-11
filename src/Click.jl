@@ -29,8 +29,8 @@ include("primitives.jl")
 
 # Graphical Backends
 @require Gtk include("gtk.jl")
+@require GLFW include("glfw.jl")
 @require Tk include("tk.jl")
 # plan to support other backends once I know more about them
-# particularly, GLFW
 
 end # module
