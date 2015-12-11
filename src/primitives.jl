@@ -1,6 +1,7 @@
 
-# An Image Map submodule
-module ImageMap
+# An Primitive submodule
+# Provides basic shapes to work with
+module Primitives
 
 import Click: ClickableBounds, Bounds, check_bounds
 

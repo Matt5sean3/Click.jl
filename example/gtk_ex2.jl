@@ -1,15 +1,3 @@
-# Click.jl
-Julia package to allow simpler interaction with graphics
-
-## Image Maps
-The simplest application of this library is to create a click map for a static 
-image that is loaded into a GUI. Create the image map and connect it to the 
-underlying GUI using this package as seen below for Gtk.
-
-This code (example/gtk\_ex2.jl) creates a window with a square in the center 
-of the window that opens an info dialog when clicked.
-
-```julia
 #!/usr/bin/env julia
 using Click, Click.Primitives, Gtk, Graphics
 
@@ -51,4 +39,3 @@ if !isinteractive()
   end
   Gtk.gtk_main()
 end
-```

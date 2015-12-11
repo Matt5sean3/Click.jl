@@ -2,12 +2,18 @@
 """
 ```julia
 SimpleClickMap()
+SimpleClickMap(c...)
 ```
+
+* `c` - Clickables that the click map is initialized with
 """
-type SimpleClickMap
+type SimpleClickMap <: ClickMap
   clicks::Array{Clickable, 1}
   function SimpleClickMap()
     return new(Array{Clickable, 1}())
+  end
+  function SimpleClickMap(c...)
+    return new(Array{Clickable, 1}(collect(c)))
   end
 end
 
