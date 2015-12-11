@@ -6,15 +6,25 @@ module GtkLink
 using Click
 using Gtk
 
+buttonDown = [
+  :down,
+  :centerdown,
+  :rightdown
+  ]
 function pressed(widget::Ptr, event::Ptr{Gtk.GdkEvent}, m::ClickMap)
   evt = Gtk.GdkEvent(event)
-  update(m, evt.x, evt.y, :down)
+  update(m, evt.x, evt.y, buttonDown[evt.button])
   return Cint(0)
 end
 
+buttonUp = [
+  :up,
+  :centerup,
+  :rightup
+  ]
 function released(widget::Ptr, event::Ptr{Gtk.GdkEvent}, m::ClickMap)
   evt = Gtk.GdkEvent(event)
-  update(m, evt.x, evt.y, :up)
+  update(m, evt.x, evt.y, buttonUp[evt.button])
   return Cint(0)
 end
 

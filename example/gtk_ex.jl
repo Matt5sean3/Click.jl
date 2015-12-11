@@ -28,6 +28,7 @@ right = Primitives.ClickableCircle(
 
 canvas = @GtkCanvas(400, 400)
 
+# left click the left eye to toggle red
 attend(left, :click) do frm
   global color
   global canvas
@@ -40,6 +41,19 @@ attend(left, :click) do frm
   draw(canvas)
 end
 
+# right click the left eye to toggle green
+attend(left, :rightclick) do frm
+  global color
+  global canvas
+  if color[2] < 1.0
+    color[2] = 1.0
+  else
+    color[2] = 0.0
+  end
+  draw(canvas)
+end
+
+# left click the right eye to toggle blue
 attend(right, :click) do frm
   global color
   global canvas
