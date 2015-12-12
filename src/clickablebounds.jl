@@ -14,14 +14,18 @@ ClickableBounds(bounds::Bounds)
 
 * `base` - context containing the clickable form
 * `form` - clickable form in compose
+
+Essentially creates a `Clickable` object from a `Bounds` object. The resulting
+object is also a `Bounds` object since `Clickable` objects are also `Bounds` 
+objects.
 """
-type ClickableBounds{B <: Bounds} <: Clickable
-  bounds::B
+type ClickableBounds <: Clickable
+  bounds::Bounds
   hover::Bool
   mouseButtons::Array{Bool, 1}
   listeners::Dict{Symbol, Array{Listener, 1}}
 
-  function ClickableBounds(bounds::B)
+  function ClickableBounds(bounds::Bounds)
     triggers = [:move, :down, :up, :rightdown, :rightup, :centerdown, :centerup, 
       :out, :in, :click, :rightclick, :centerclick]
     callbacks = Dict{Symbol, Array{Listener, 1}}()
@@ -33,66 +37,70 @@ type ClickableBounds{B <: Bounds} <: Clickable
 
 end
 
-function attend{C <: ClickableBounds}(f::Function, frm::C, trigger::Symbol)
-  list = frm.listeners[trigger]
+# check_bounds just gets passed to the now internally kept bounds object
+check_bounds(b::ClickableBounds, x::Number, y::Number) = 
+  check_bounds(b.bounds, x, y)
+
+function attend(f::Function, b::ClickableBounds, trigger::Symbol)
+  list = b.listeners[trigger]
   push!(list, Listener(f, true))
   return length(list)
 end
 
-function deactivate(frm::ClickableBounds{Bounds}, trigger::Symbol, id)
-  frm.listeners[trigger][id][2] = false
+function deactivate(b::ClickableBounds, trigger::Symbol, id)
+  b.listeners[trigger][id][2] = false
 end
 
-function reactivate(frm::ClickableBounds{Bounds}, trigger::Symbol, id)
-  frm.listeners[trigger][id][2] = true
+function reactivate(b::ClickableBounds, trigger::Symbol, id)
+  b.listeners[trigger][id][2] = true
 end
 
 # nop, used internally to simplify code
 Base.push!(arr::Array{Listener, 1}) = arr
 
-function update{C <: ClickableBounds}(frm::C,
+function update(b::ClickableBounds,
                 x::Number, 
                 y::Number, 
                 trigger::Symbol)
   triggered = Array{Listener, 1}()
-  isin = check_bounds(frm.bounds, x, y)
+  isin = check_bounds(b.bounds, x, y)
   if isin
     # Always pass through when in bounds
-    push!(triggered, frm.listeners[trigger]...)
+    push!(triggered, b.listeners[trigger]...)
     # Uses a sort of if-statement short-hand
-    trigger == :down && (frm.mouseButtons[1] = true)
+    trigger == :down && (b.mouseButtons[1] = true)
 
-    trigger == :up && frm.mouseButtons[1] && 
-      push!(triggered, frm.listeners[:click]...)
+    trigger == :up && b.mouseButtons[1] && 
+      push!(triggered, b.listeners[:click]...)
 
-    trigger == :rightdown && (frm.mouseButtons[3] = true)
+    trigger == :rightdown && (b.mouseButtons[3] = true)
 
-    trigger == :rightup && frm.mouseButtons[3] && 
-      push!(triggered, frm.listeners[:rightclick]...)
+    trigger == :rightup && b.mouseButtons[3] && 
+      push!(triggered, b.listeners[:rightclick]...)
 
-    trigger == :centerdown && (frm.mouseButtons[2] = true)
+    trigger == :centerdown && (b.mouseButtons[2] = true)
 
-    trigger == :centerup && frm.mouseButtons[2] &&
-      push!(triggered, frm.listeners[:centerclick]...)
+    trigger == :centerup && b.mouseButtons[2] &&
+      push!(triggered, b.listeners[:centerclick]...)
   end
-  if frm.hover
+  if b.hover
     # Previously in bounds
     if !isin
       # Reset mouse clicking
-      frm.mouseButtons[1] = false
-      frm.mouseButtons[2] = false
-      frm.mouseButtons[3] = false
+      b.mouseButtons[1] = false
+      b.mouseButtons[2] = false
+      b.mouseButtons[3] = false
       # left the bounds
-      push!(triggered, frm.listeners[:out]...)
+      push!(triggered, b.listeners[:out]...)
     end
   else
     # Previously out of bounds
     if isin
       # entered bounds
-      push!(triggered, frm.listeners[:in]...)
+      push!(triggered, b.listeners[:in]...)
     end
   end
-  frm.hover = isin
-  [listener(frm) for listener in triggered]
+  b.hover = isin
+  [listener(b) for listener in triggered]
 end
 

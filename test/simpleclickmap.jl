@@ -1,7 +1,7 @@
 
-clickRect = ClickableRectangle(Rectangle(20, 20, 100, 20))
-clickCirc = ClickableCircle(Circle(30, 100, 20))
-clickTri = ClickableConvexPolygon(
+clickRect = ClickableBounds(Rectangle(20, 20, 100, 20))
+clickCirc = ClickableBounds(Circle(30, 100, 20))
+clickTri = ClickableBounds(
                ConvexPolygon{Int64}((70, 60), (90, 60), (90, 80)))
 
 rectClicks = 0

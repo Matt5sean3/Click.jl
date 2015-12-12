@@ -1,9 +1,10 @@
 """
 ```julia
-abstract Clickable
+abstract Clickable <: Bounds
 ```
 
 An object implementing the `Clickable` interface.
+Additionally, the `Bounds` interface must be implemented.
 
 required
 * `attend`
@@ -16,7 +17,7 @@ optional
 
 see also: `attend`, `update`, `deactivate`, `reactivate`, `bounding_box`
 """
-abstract Clickable
+abstract Clickable <: Bounds
 
 """
 ```julia
