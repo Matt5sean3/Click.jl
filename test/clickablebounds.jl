@@ -1,6 +1,6 @@
-clickRect = ClickableRectangle(dummy)
-clickCircle = ClickableCircle(dummyCircle)
-clickPoly = ClickableConvexPolygon(dummyPoly)
+clickRect = ClickableBounds(dummy)
+clickCircle = ClickableBounds(dummyCircle)
+clickPoly = ClickableBounds(dummyPoly)
 
 circleClicked = 0
 attend(clickCircle, :click) do clickable

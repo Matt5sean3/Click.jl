@@ -8,4 +8,5 @@ include("primitives.jl")
 include("clickablebounds.jl")
 # simple click map
 include("simpleclickmap.jl")
-
+# GTK support
+include("gtk.jl")

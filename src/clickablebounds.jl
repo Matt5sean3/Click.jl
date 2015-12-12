@@ -9,11 +9,11 @@ end
 
 """
 ```julia
+type CliclableBounds{B <: Bounds}
 ClickableBounds(bounds::Bounds)
 ```
 
-* `base` - context containing the clickable form
-* `form` - clickable form in compose
+* `bounds` - Boundaries to create a clickable object using
 """
 type ClickableBounds{B <: Bounds} <: Clickable
   bounds::B
@@ -31,6 +31,10 @@ type ClickableBounds{B <: Bounds} <: Clickable
     new(bounds, false, [false, false, false], callbacks)
   end
 
+end
+
+function ClickableBounds(bounds::Bounds)
+  return ClickableBounds{typeof(bounds)}(bounds)
 end
 
 function attend{C <: ClickableBounds}(f::Function, frm::C, trigger::Symbol)
