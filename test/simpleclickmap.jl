@@ -5,19 +5,19 @@ clickTri = ClickableBounds(
                ConvexPolygon{Int64}((70, 60), (90, 60), (90, 80)))
 
 rectClicks = 0
-attend(clickRect, :click) do frm
+attend(clickRect, :click) do frm, x, y
   global rectClicks
   rectClicks += 1
 end
 
 circClicks = 0
-attend(clickCirc, :click) do frm
+attend(clickCirc, :click) do frm, x, y
   global circClicks
   circClicks += 1
 end
 
 triClicks = 0
-attend(clickTri, :click) do frm
+attend(clickTri, :click) do frm, x, y
   global triClicks
   triClicks += 1
 end

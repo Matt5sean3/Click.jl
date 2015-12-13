@@ -48,7 +48,7 @@ rotate(d::Draggable, angle::Number) =
 
 """
 ```julia
-rotate(d::Draggable, angle::Number)
+translate(d::Draggable, dx::Number, dy::Number)
 ```
 """
 translate(d::Draggable, dx::Number, dy::Number) =

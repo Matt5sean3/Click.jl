@@ -101,6 +101,6 @@ function update(b::ClickableBounds,
     end
   end
   b.hover = isin
-  [listener(b) for listener in triggered]
+  [listener(b, x, y) for listener in triggered]
 end
 

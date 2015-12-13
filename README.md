@@ -1,6 +1,10 @@
 # Click.jl
 Julia package to allow simpler interaction with graphics
 
+## Warning
+This package is far from ready for prime time. Major API instability is a 
+necessity at this stage.
+
 ## Image Maps
 The simplest application of this library is to create a click map for a static 
 image that is loaded into a GUI. Create the image map and connect it to the 

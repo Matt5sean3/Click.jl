@@ -11,12 +11,32 @@ Creates a `Draggable` from a `Clickable.` `Draggable` objects are also
 type DraggableClickable <: Draggable
   clickable::Clickable
   transform::Matrix{Number}
+  leftState::Bool
+  oldPos::Array{Number, 1}
   function DraggableClickable(c::Clickable)
-    new(c, eye(3))
+    ret = new(c, eye(3))
+    # By default, this is configured to use translative dragging
+    attend(ret, :out) do frm, x, y
+      frm.leftState = false
+    end
+    attend(ret, :down) do frm, x, y
+      oldPos[1] = x
+      oldPos[2] = y
+      frm.leftState = true
+    end
+    attend(ret, :up) do frm, x, y
+      frm.leftState = false
+    end
+    attend(ret, :move) do frm, x, y
+      if frm.leftState
+        translate(x - oldPos[1], oldPos[2])
+      end
+    end
+    return ret
   end
   function DraggableClickable(b::Bounds)
     # Create a ClickableBounds object internally
-    new(ClickableBounds(b), eye(3))
+    DraggableClickable(ClickableBounds(b))
   end
 end
 
@@ -26,8 +46,7 @@ end
 
 # Use an intermediate step before bounds checking
 function check_bounds(d::DraggableClickable, x::Number, y::Number)
-  x = [x, y, 1.0]
-  xp = d.transform * x
+  xp = d.transform * [x, y, 1.0]
   check_bounds(d.clickable, xp[1], xp[2])
 end
 
@@ -43,8 +62,7 @@ reactivate(d::DraggableClickable, trigger::Symbol, id) =
 
 # Take an intermediate step before updating
 function update(d::DraggableClickable, x::Number, y::Number, trigger::Symbol)
-  x = [x, y, 1.0]
-  xp = d.transform * x
+  xp = d.transform * [x, y, 1.0]
   update(d.clickable, xp[1], xp[2], trigger)
 end
 

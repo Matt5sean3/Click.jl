@@ -34,7 +34,7 @@ Returns the identifier of the added listener which can be used in the
 This is compatible with the do-end syntax
 
 ```julia
-attend(frm, :click) do frm
+attend(frm, :click) do frm, x, y
   # ... CODE TO EXECUTE UPON CLICK ...
 end
 ```

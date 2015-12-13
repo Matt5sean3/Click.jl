@@ -23,20 +23,20 @@ clickCircle = ClickableBounds(dummyCircle)
 clickPoly = ClickableBounds(dummyPoly)
 
 circleClicked = 0
-attend(clickCircle, :click) do clickable
+attend(clickCircle, :click) do clickable, x, y
   global circleClicked
   circleClicked += 1
 end
 
 polyClicked = 0
-attend(clickPoly, :click) do clickable
+attend(clickPoly, :click) do clickable, x, y
   global polyClicked
   polyClicked += 1
 end
 
 
 rectClicked = 0
-attend(clickRect, :click) do clickable
+attend(clickRect, :click) do clickable, x, y
   global rectClicked
   rectClicked += 1
 end
@@ -80,7 +80,7 @@ update(clickRect, 40, 45, :up)
 
 # same tests for right mouse button
 rightRectClicked = 0
-attend(clickRect, :rightclick) do clickable
+attend(clickRect, :rightclick) do clickable, x, y
   global rightRectClicked
   rightRectClicked += 1
 end
@@ -106,7 +106,7 @@ update(clickRect, 40, 45, :rightup)
 
 # same tests for center mouse button
 centerRectClicked = 0
-attend(clickRect, :centerclick) do clickable
+attend(clickRect, :centerclick) do clickable, x, y
   global centerRectClicked
   centerRectClicked += 1
 end

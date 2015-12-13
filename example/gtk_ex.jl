@@ -13,12 +13,12 @@ circGeom = ((200, 200, 150),
             (275, 125, 10))
 arcGeom = ((200, 200, 125, 45 * pi / 180, 135 * pi / 180), )
 
-left = Primitives.ClickableCircle(
+left = ClickableBounds(
            Primitives.Circle(
                circGeom[2][1], 
                circGeom[2][2], 
                circGeom[2][3]))
-right = Primitives.ClickableCircle(
+right = ClickableBounds(
            Primitives.Circle(
                circGeom[3][1], 
                circGeom[3][2], 
@@ -28,7 +28,7 @@ right = Primitives.ClickableCircle(
 
 canvas = @GtkCanvas(400, 400)
 
-attend(left, :click) do frm
+attend(left, :click) do frm, x, y
   global color
   global canvas
   if color[1] < 1.0
@@ -40,7 +40,7 @@ attend(left, :click) do frm
   draw(canvas)
 end
 
-attend(right, :click) do frm
+attend(right, :click) do frm, x, y
   global color
   global canvas
   if color[3] < 1.0
