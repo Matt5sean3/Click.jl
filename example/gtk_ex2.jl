@@ -15,10 +15,10 @@ end
 
 # create a 100x100 clickable rectangle
 rect = Rectangle(50, 50, 100, 100)
-clickRect = ClickableRectangle(rect)
+clickRect = ClickableBounds(rect)
 
 # Attach a callback to a click event
-attend(clickRect, :click) do widget
+attend(clickRect, :click) do widget, x, y
   global win
   info_dialog("Clicked the rectangle", win)
 end

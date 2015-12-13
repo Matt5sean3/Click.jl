@@ -111,19 +111,19 @@ moveEvt = Gtk.GdkEventMotion(
   0.0)
 
 leftClicks = 0
-attend(clickRect, :click) do frm
+attend(clickRect, :click) do frm, x, y
   global leftClicks
   leftClicks += 1
 end
 
 rightClicks = 0
-attend(clickRect, :rightclick) do frm
+attend(clickRect, :rightclick) do frm, x, y
   global rightClicks
   rightClicks += 1
 end
 
 centerClicks = 0
-attend(clickRect, :centerclick) do frm
+attend(clickRect, :centerclick) do frm, x, y
   global centerClicks
   centerClicks += 1
 end

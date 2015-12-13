@@ -3,17 +3,20 @@
 # Provides basic shapes to work with
 module Primitives
 
-import Click: ClickableBounds, Bounds, check_bounds
 
-export Rectangle, Circle, ClickableRectangle, ClickableCircle, 
-       ConvexPolygon, ClickableConvexPolygon
+import Click: ClickableBounds, DraggableClickable, Bounds, check_bounds
+import Base: convert
+
+export Rectangle, Circle, ConvexPolygon
+
+abstract Primitive <: Bounds
 
 """
 ```julia
 Rectangle(x::Number, y::Number, width::Number, height::Number)
 ```
 """
-type Rectangle <: Bounds
+type Rectangle <: Primitive
   x::Number
   y::Number
   width::Number
@@ -24,9 +27,7 @@ check_bounds(bounds::Rectangle, x::Number, y::Number) =
   return bounds.x < x < bounds.x + bounds.width && 
     bounds.y < y < bounds.y + bounds.height
 
-typealias ClickableRectangle ClickableBounds{Rectangle}
-
-type Circle <: Bounds
+type Circle <: Primitive
   x::Number
   y::Number
   r::Number
@@ -38,14 +39,12 @@ function check_bounds(bounds::Circle, x::Number, y::Number)
   return dx * dx + dy * dy < bounds.r * bounds.r
 end
 
-typealias ClickableCircle ClickableBounds{Circle}
-
 """
 ```julia
 ConvexPolygon(points::Array{NTuple{2, Number}, 1})
 ```
 """
-type ConvexPolygon{N <: Number} <: Bounds
+type ConvexPolygon{N <: Number} <: Primitive
   lines::Array{NTuple{3, N}, 1}
   # Can't do type detection
   function ConvexPolygon(points...)
@@ -78,7 +77,5 @@ function check_bounds(bounds::ConvexPolygon, x::Number, y::Number)
   end
   return true
 end
-
-typealias ClickableConvexPolygon ClickableBounds{ConvexPolygon}
 
 end # module
