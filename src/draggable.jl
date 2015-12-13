@@ -13,6 +13,9 @@ has default implementation:
 required:
 * `transform`
 
+optional:
+* `transform_matrix`
+
 A draggable object is essentially a clickable object that can be moved using 
 simple transforms.
 """
@@ -30,7 +33,7 @@ Must be implemented to apply the transform such that if the draggable were a
 point cloud with a point at x, it's transformed location would be x'
 x' = A * x
 """
-transform(d::Draggable, mat::Matrix{Number}) = 
+transform(d::Draggable, mat::Matrix) = 
   error("Transform not implemented for this draggable")
 
 """
@@ -55,4 +58,15 @@ translate(d::Draggable, dx::Number, dy::Number) =
   transform(d, [1.0 0.0 dx; 
                 0.0 1.0 dy; 
                 0.0 0.0 1.0])
+
+"""
+```julia
+transform_matrix(d::Draggable)
+```
+
+Used to access the homogeneous transform matrix between local coordinates 
+of the draggable and global coordinates, not necessarily writable.
+"""
+transform_matrix(d::Draggable) =
+  warn("`transform_matrix` not implemented for this `Draggable`")
 

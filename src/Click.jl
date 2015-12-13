@@ -7,6 +7,7 @@ import Base: convert
 export Clickable, ClickableBounds, ClickMap, attend, deactivate, reactivate, 
        update, bounding_box, SimpleClickMap, link_click_map
 export Bounds, check_bounds
+export Draggable, DraggableClickable, transform, rotate, translate, transform_matrix
 # Most basic backend object
 include("bounds.jl")
 include("clickable.jl")
