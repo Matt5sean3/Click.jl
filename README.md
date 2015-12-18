@@ -1,9 +1,9 @@
-# Click.jl
+# Click!
 Julia package to allow simpler interaction with graphics
 
 ## Warning
-This package is far from ready for prime time. Major API instability is a 
-necessity at this stage.
+Large portions of this package still need testing so not everything is 
+guaranteed to work.
 
 ## Image Maps
 The simplest application of this library is to create a click map for a static 
@@ -56,3 +56,48 @@ if !isinteractive()
   Gtk.gtk_main()
 end
 ```
+
+## Using GTK and Compose
+A very useful case is to make objects from a library, such as Compose\*, which
+abstracts the drawing process, clickable.
+
+This code (example/gtk\_compose\_ex.jl) demonstrates this performing much the
+same task as the image map example above but without needing to worry about
+Gtk's drawing loop.
+
+```julia
+using Gtk, Compose, Click
+
+# Create a 400x400 canvas
+canvas = @GtkCanvas(400, 400)
+win = @GtkWindow(canvas, "GTK-Compose Example")
+
+rect = rectangle(0.25, 0.25, 0.5, 0.5)
+vect = compose(context(0mm, 0mm, 100mm, 100mm),
+               rect,
+               fill("black"))
+
+cl = create_clickable(rect, vect)
+
+attend(cl, :click) do frm, x, y
+  info_dialog("Clicked Square", win)
+end
+
+# Use the fuse function to stitch things together
+
+# ComposeClickMap needs to wrap SimpleClickMap to account for pixel density
+# which that object is updated with internal to fuse
+fuse(SimpleClickMap(cl), canvas, vect)
+
+show(canvas)
+
+# block the main thread of execution if not interactive
+if !isinteractive()
+  signal_connect(win, :destroy) do widget
+    Gtk.gtk_quit()
+  end
+  Gtk.gtk_main()
+end
+```
+
+\* Be careful with this at the moment as Compose support is a work in progress.

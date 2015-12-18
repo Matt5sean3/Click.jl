@@ -7,7 +7,7 @@ module Primitives
 import Click: ClickableBounds, DraggableClickable, Bounds, check_bounds
 import Base: convert
 
-export Rectangle, Circle, ConvexPolygon
+export Primitive, Rectangle, Circle, ConvexPolygon
 
 abstract Primitive <: Bounds
 

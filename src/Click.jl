@@ -6,8 +6,9 @@ import Base: convert
 
 export Clickable, ClickableBounds, ClickMap, attend, deactivate, reactivate, 
        update, bounding_box, SimpleClickMap, link_click_map
-export Bounds, check_bounds
+export Bounds, check_bounds, create_bounds, create_clickable, create_draggable
 export Draggable, DraggableClickable, transform, rotate, translate, transform_matrix
+export fuse
 # Most basic backend object
 include("bounds.jl")
 include("clickable.jl")
@@ -36,5 +37,8 @@ include("primitives.jl")
 @require Tk include("tk.jl")
 # plan to support other backends once I know more about them
 # particularly, GLFW
+
+# Add integration methods
+include("fuse.jl")
 
 end # module
