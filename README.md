@@ -59,13 +59,14 @@ end
 
 ## Using GTK and Compose
 A very useful case is to make objects from a library, such as Compose\*, which
-abstracts the drawing process, clickable.
-
-This code (example/gtk\_compose\_ex.jl) demonstrates this performing much the
-same task as the image map example above but without needing to worry about
-Gtk's drawing loop.
+abstracts the drawing process, clickable. This example 
+(example/gtk\_compose\_ex.jl) demonstrates this by allowing essentially the 
+same square to be clicked at both locations at which it is drawn. It also 
+hides certain implementation details such as Gtk's drawing loop.
 
 ```julia
+#!/usr/bin/env julia
+
 using Gtk, Compose, Click
 
 # Create a 400x400 canvas
@@ -73,9 +74,15 @@ canvas = @GtkCanvas(400, 400)
 win = @GtkWindow(canvas, "GTK-Compose Example")
 
 rect = rectangle(0.25, 0.25, 0.5, 0.5)
-vect = compose(context(0mm, 0mm, 100mm, 100mm),
-               rect,
-               fill("black"))
+vect = compose(context(0mm, 0mm, 300mm, 300mm),
+         rectangle(0.0, 0.0, 1.0, 1.0),
+         fill("green"),
+         compose(context(0.0, 0.0, 0.5, 0.5),
+           rect,
+           fill("black")),
+         compose(context(0.5, 0.5, 0.5, 0.5),
+           rect,
+           fill("blue")))
 
 cl = create_clickable(rect, vect)
 

@@ -5,6 +5,14 @@ using Click
 using Click.Primitives
 import Base: copy
 
+# Provides context for a compose primitive
+
+type Transform
+  mat::Matrix
+  x::Compose.AbsoluteLength
+  y::Compose.AbsoluteLength
+end
+
 # Provides advanced support for working with Compose
 
 # To work correctly this needs to know the Context's pixel to millimeter
@@ -13,7 +21,7 @@ import Base: copy
 type ComposeBounds <: Bounds
   origin::Compose.Context
   geom::Compose.Form
-  primitives::Array{Bounds}
+  primitives::Array{Tuple{Bounds, Transform}, 1}
   lastHash::UInt64
   function ComposeBounds(geom::Compose.Form, base::Context)
     ret = new(base, geom)
@@ -21,12 +29,6 @@ type ComposeBounds <: Bounds
     generate_clickables!(ret)
     return ret
   end
-end
-
-type Transform
-  mat::Matrix
-  x::Compose.AbsoluteLength
-  y::Compose.AbsoluteLength
 end
 
 function copy(t::Transform)
@@ -56,8 +58,6 @@ function composeform_to_primitive(prim::Compose.RectanglePrimitive,
   # convert relative units to absolute
   ms = (prim.corner[1], prim.corner[2], prim.width, prim.height)
   vs = [absolute_units(m, t) for m in ms]
-  tlCorner = t.mat * [vs[1], vs[2], 1]
-  brCorner = t.mat * [vs[1] + vs[3], vs[2] + vs[4], 1]
   return Rectangle(vs[1], vs[2], 
                    vs[3], vs[4])
 end
@@ -66,17 +66,19 @@ function composeform_to_primitive(prim::Compose.CirclePrimitive,
                                   t::Transform)
   ms = (prim.center[1], prim.center[2], prim.radius)
   vs = [absolute_units(m, t) for m in ms]
-  return Circle(t[1, 3] + v[1], 
-                t[2, 3] + v[2], 
+  return Circle(v[1], 
+                v[2], 
                 v[3])
 end
 
 function generate_clickables!(x::ComposeBounds)
   x.lastHash = hash(x.origin) + hash(x.geom)
-  bounds = Array{Bounds, 1}()
-  for transform in generate_transforms(x.geom, x.origin)
+  bounds = Array{Tuple{Bounds, Transform}, 1}()
+  transforms = generate_transforms(x.geom, x.origin)
+  for transform in transforms
     for primitive in x.geom.primitives
-      push!(bounds, composeform_to_primitive(primitive, transform))
+      bound = composeform_to_primitive(primitive, transform)
+      push!(bounds, (bound, transform))
     end
   end
   x.primitives = bounds
@@ -98,10 +100,10 @@ function generate_transforms(p::Compose.Form,
   # Generate the local to global transform
   t = copy(t)
   # Matching screen units to Compose.jl units is difficult
-  t.x = absolute_units(Compose.width(base.box), t)mm
-  t.y = absolute_units(Compose.height(base.box), t)mm
   dx = absolute_units(base.box.x0[1], t)
   dy = absolute_units(base.box.x0[2], t)
+  t.x = absolute_units(Compose.width(base.box), t)mm
+  t.y = absolute_units(Compose.height(base.box), t)mm
   t.mat *= [1.0 0.0 dx;
             0.0 1.0 dy;
             0.0 0.0 1.0]
@@ -188,7 +190,9 @@ function check_bounds(geom::ComposeLink.ComposeBounds, x::Number, y::Number)
   # Run each transform
   # Check every primitive
   for bound in geom.primitives
-    if check_bounds(bound, x, y)
+    # Transform to local coordinates
+    xv = inv(bound[2].mat) * [x, y, 1.0]
+    if check_bounds(bound[1], xv[1], xv[2])
       return true
     end
   end

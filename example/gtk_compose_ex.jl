@@ -7,9 +7,15 @@ canvas = @GtkCanvas(400, 400)
 win = @GtkWindow(canvas, "GTK-Compose Example")
 
 rect = rectangle(0.25, 0.25, 0.5, 0.5)
-vect = compose(context(0mm, 0mm, 100mm, 100mm), 
-               rect, 
-               fill("black"))
+vect = compose(context(0mm, 0mm, 300mm, 300mm),
+         rectangle(0.0, 0.0, 1.0, 1.0),
+         fill("green"),
+         compose(context(0.0, 0.0, 0.5, 0.5), 
+           rect, 
+           fill("black")),
+         compose(context(0.5, 0.5, 0.5, 0.5),
+           rect,
+           fill("blue")))
 
 cl = create_clickable(rect, vect)
 
