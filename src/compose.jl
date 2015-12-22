@@ -99,25 +99,34 @@ function generate_transforms(p::Compose.Form,
                              t::Transform = Transform(eye(3), 0mm, 0mm))
   # Generate the local to global transform
   t = copy(t)
+
   # Matching screen units to Compose.jl units is difficult
+
   dx = absolute_units(base.box.x0[1], t)
   dy = absolute_units(base.box.x0[2], t)
-  t.x = absolute_units(Compose.width(base.box), t)mm
-  t.y = absolute_units(Compose.height(base.box), t)mm
   t.mat *= [1.0 0.0 dx;
             0.0 1.0 dy;
             0.0 0.0 1.0]
 
-  # Rotation about a point
-  rot = get(base.rot, Rotation(0.0, (0.0mm, 0.0mm)))
-  co = cos(rot.theta)
-  si = sin(rot.theta)
-  dxr = rot.offset[1] / mm
-  dyr = rot.offset[2] / mm
-  # translate to make the point the origin
-  t.mat *= [co  -si dxr - dxr * co + si * dyr;
-            si   co dyr - dxr * si - co * dyr;
-            0.0 0.0                       1.0]
+  # Change context
+  t.x = absolute_units(Compose.width(base.box), t)mm
+  t.y = absolute_units(Compose.height(base.box), t)mm
+
+#   # Compose doesn't seem to implement rotations yet
+#   # rotate
+#   rot = get(base.rot, Rotation(0.0, (0.0mm, 0.0mm)))
+#   co = cos(rot.theta)
+#   si = sin(rot.theta)
+#   dxr = absolute_units(rot.offset[1], t)
+#   dyr = absolute_units(rot.offset[2], t)
+# 
+#   println([co   si -co * dxr - dyr * si + dxr;
+#             -si  co  si * dxr - dyr * co + dyr;
+#             0.0 0.0 1.0])
+#   t.mat *= [co   si -co * dxr - dyr * si + dxr;
+#             -si  co  si * dxr - dyr * co + dyr;
+#             0.0 0.0 1.0]
+
   # Check the contained children
   ret = Array{Transform, 1}()
   for child in Compose.children(base)
